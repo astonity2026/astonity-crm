@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Astonity CRM Offline Preview</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@500;700;900&display=swap');
+*{box-sizing:border-box}
+:root{--bg:#050816;--line:rgba(79,142,247,.22);--cyan:#00d4ff;--orange:#ff8c00;--text:#e5f4ff;--muted:rgba(229,244,255,.58)}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:'Arame','Michroma','Orbitron',sans-serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{padding-bottom:86px;background:radial-gradient(circle at 20% -5%,rgba(0,212,255,.12),transparent 30%),#050816}
+button,input,select,textarea,a{font:inherit}
+button{cursor:pointer}
+.top{position:sticky;top:0;z-index:10;background:rgba(5,8,22,.96);border-bottom:1px solid var(--line);padding:8px 10px 8px;backdrop-filter:blur(14px)}
+.eyebrow{font-size:7px;letter-spacing:1.8px;color:var(--cyan);opacity:.78;line-height:1.2}
+.title{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:start;margin-top:6px}
+h1{margin:0;font-size:20px;line-height:.95;letter-spacing:.5px}
+.blue{display:block;color:var(--cyan);text-shadow:0 0 12px rgba(0,212,255,.45)}
+.headerRight{min-width:110px;text-align:right}
+.small{font-size:8px;line-height:1.15;color:var(--muted)}
+.syncBtn{margin-top:4px;width:100%;min-height:28px;padding:5px 6px;font-size:7.5px;border-radius:8px;border:1px solid rgba(255,140,0,.45);background:rgba(255,140,0,.08);color:var(--orange);font-weight:1000}
+.sync{font-size:7px;line-height:1.2;margin-top:3px;color:var(--orange)}
+.wrap{padding:8px 8px 14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.stat{border:1px solid var(--line);background:rgba(229,244,255,.045);border-radius:11px;padding:8px 8px}
+.stat strong{display:block;color:var(--cyan);font-size:16px;line-height:1}
+.stat span{font-size:6.5px;color:var(--muted)}
+.filters{display:grid;gap:6px;margin-bottom:8px}
+input,select,textarea{width:100%;border:1px solid rgba(79,142,247,.28);background:#06101f;color:var(--text);border-radius:10px;padding:10px 9px;outline:none}
+#search{min-height:34px;font-size:11px}
+.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.filterRow select{min-height:34px;padding:7px 8px;font-size:8px}
+.section{margin:10px 0 7px;font-size:9px;letter-spacing:1.4px;color:var(--cyan);font-weight:900}
+.leadList{display:grid;gap:6px}
+.leadCard{position:relative;padding:8px 8px 7px;border-radius:14px;background:linear-gradient(135deg,rgba(15,34,56,.82),rgba(6,15,28,.92));border:1px solid rgba(58,123,184,.30);border-left-width:4px;box-shadow:inset 0 0 0 1px rgba(0,212,255,.05),0 8px 18px rgba(0,0,0,.18);overflow:hidden}
+.leadCard::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:4px;border-radius:0 999px 999px 0;background:var(--lead-glow,#00d4ff)}
+.leadTop{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start}
+.avatar{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:10px;font-weight:1000;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.40)}
+.identity{padding-right:120px}
+.handle{font-size:11px;font-weight:1000;line-height:1.05}
+.business{font-size:9px;line-height:1.15;margin-top:2px;color:rgba(229,244,255,.68)}
+.contactIcons{display:flex;gap:6px;margin-top:5px}
+.contactIcon{width:38px;height:22px;border-radius:7px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.24);display:flex;align-items:center;justify-content:center;color:var(--cyan);text-decoration:none}
+.contactIcon svg{width:12px;height:12px;stroke:var(--cyan)}
+.contactIcon.disabled{opacity:.3;pointer-events:none}
+.igActions{position:absolute;top:8px;right:8px;display:flex;gap:6px;align-items:center}
+.miniBtn,.openBtn,.primary{display:flex;align-items:center;justify-content:center;width:56px;min-width:56px;height:24px;min-height:24px;padding:4px 4px;border-radius:9px;font-size:7px;border:1px solid rgba(0,212,255,.34);background:rgba(0,212,255,.07);color:var(--cyan);text-decoration:none;font-weight:1000}
+.primary{width:100%;min-width:0;height:34px;min-height:34px;font-size:9px}
+.divider{height:1px;background:rgba(79,142,247,.16);margin:6px 0 7px}
+.controlRow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin-bottom:6px}
+.inline{display:flex;gap:6px}
+.pill,.statusSelect,.prioritySelect{width:86px;min-width:86px;max-width:86px;height:27px;min-height:27px;padding:4px 7px;font-size:7.5px;border-radius:999px;background:rgba(5,11,22,.95)}
+.statusSelect[data-v="NEW LEAD"],.prioritySelect[data-v="NEW LEAD"]{color:#00d4ff;border-color:rgba(0,212,255,.65)}
+.statusSelect[data-v="FIRST DM"]{color:#38bdf8;border-color:rgba(56,189,248,.65)}
+.statusSelect[data-v="FOLLOW UP 1"],.statusSelect[data-v="FOLLOW UP 2"],.prioritySelect[data-v="MEDIUM"]{color:#facc15;border-color:rgba(250,204,21,.65)}
+.statusSelect[data-v="REPLIED"],.statusSelect[data-v="CLOSED"],.prioritySelect[data-v="HIGH"]{color:#22c55e;border-color:rgba(34,197,94,.65)}
+.statusSelect[data-v="ENGAGED"]{color:#a78bfa;border-color:rgba(167,139,250,.65)}
+.statusSelect[data-v="NOT INTERESTED"],.prioritySelect[data-v="LOW"]{color:#ef4444;border-color:rgba(239,68,68,.65)}
+.statusSelect[data-v="DEAD"],.prioritySelect[data-v="DEAD"]{color:#94a3b8;border-color:rgba(54,69,79,.85)}
+.lastContact{font-size:8px;gap:7px;white-space:nowrap;display:flex}
+.nextDate{color:var(--orange)}
+.notesWrap{padding:7px;border-radius:10px;background:rgba(0,13,26,.42);border:1px solid rgba(0,212,255,.18)}
+.notesWrap.emptyNote{display:none}
+.notesHeader{display:flex;justify-content:space-between;font-size:8px;margin-bottom:5px;color:rgba(229,244,255,.48);font-weight:1000}
+.editNoteBtn{background:transparent;border:0;color:var(--cyan);font-size:8px;font-weight:1000}
+.notes{min-height:40px;font-size:9px;line-height:1.3;border:0;background:transparent;padding:0}
+.showNotesBtn{width:100%;height:26px;min-height:26px;border-radius:8px;font-size:8px;margin-top:5px;border:1px solid rgba(0,212,255,.24);background:rgba(0,212,255,.06);color:var(--cyan)}
+.hidden{display:none!important}
+.page{display:none}
+.page.active{display:block}
+.card{border:1px solid var(--line);background:rgba(229,244,255,.045);border-radius:14px;padding:12px;margin-bottom:10px}
+.importHint{font-size:10px;color:var(--muted);line-height:1.5;margin:0 0 8px}
+#importFile{margin-bottom:8px;min-height:40px}
+#importInput{min-height:150px;font-size:10px}
+.importSummary{color:var(--orange);font-size:10px;font-weight:1000;margin-top:8px}
+.importPreviewCard{border:1px solid var(--line);background:rgba(0,13,26,.42);border-radius:12px;padding:9px;margin-bottom:7px}
+.importPreviewCard strong{font-size:11px}
+.importPreviewCard span{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.importBad{border-left:4px solid #ef4444}
+.importGood{border-left:4px solid var(--cyan)}
+.importActions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.bottomNavSimple{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(5,8,22,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(14px)}
+.bottomNavSimple .nav{min-height:40px;border-radius:12px;font-size:9px;background:transparent;color:rgba(229,244,255,.42);border:0;font-weight:1000}
+.bottomNavSimple .nav.active{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.22)}
+.bottomNavSimple .navPlus{width:54px;min-width:54px;height:54px;min-height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;font-weight:700;background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.32);box-shadow:0 0 0 1px rgba(0,212,255,.08) inset}
+.bottomNavSimple .navPlus.active{background:rgba(0,212,255,.18)}
+.empty{padding:28px 12px;color:rgba(229,244,255,.45);text-align:center;font-size:12px}
+</style>
+</head>
+<body>
+<div id="toast" style="display:none;position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99;border:1px solid rgba(0,212,255,.42);background:#071629;color:#00d4ff;border-radius:999px;padding:10px 14px;font-size:12px;font-weight:1000"></div>
+<header class="top">
+  <div class="eyebrow">OFFLINE PREVIEW · NO GOOGLE SHEETS</div>
+  <div class="title">
+    <h1>ASTONITY <span class="blue">CRM</span></h1>
+    <div class="headerRight">
+      <div class="small"><span id="count">0</span> leads tracked</div>
+      <button id="syncBtn" class="syncBtn">Preview Only</button>
+      <div id="syncText" class="sync">Offline preview only</div>
+      <div class="sync" style="color:rgba(229,244,255,.45)">No network calls in this preview</div>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <section id="leads" class="page active">
+    <div class="stats">
+      <div class="stat"><strong id="total">0</strong><span>Total</span></div>
+      <div class="stat"><strong id="high">0</strong><span>High</span></div>
+      <div class="stat"><strong id="replied">0</strong><span>Replied</span></div>
+      <div class="stat"><strong id="active">0</strong><span>Active</span></div>
+    </div>
+    <div class="filters">
+      <input id="search" placeholder="Search handle, business, niche, notes...">
+      <div class="filterRow">
+        <select id="fStatus"></select>
+        <select id="fPriority"></select>
+        <select id="fCategory"></select>
+      </div>
+    </div>
+    <div class="section">LEAD REGISTRY · <span id="visible">0</span> RECORDS</div>
+    <div id="leadList" class="leadList"></div>
+  </section>
+  <section id="add" class="page">
+    <div class="section">ADD NEW LEAD</div>
+    <div class="card">
+      <input id="aBusiness" placeholder="Business name"><br><br>
+      <input id="aHandle" placeholder="@instagramhandle"><br><br>
+      <select id="aCategory"></select><br><br>
+      <input id="aPhone" placeholder="Phone optional"><br><br>
+      <input id="aEmail" placeholder="Email optional"><br><br>
+      <textarea id="aNotes" placeholder="Notes optional"></textarea><br><br>
+      <button id="addBtn" class="primary">ADD LEAD</button>
+    </div>
+  </section>
+  <section id="import" class="page">
+    <div class="section">IMPORT LEADS</div>
+    <div class="card">
+      <p class="importHint">Upload CSV or paste rows. Excel button is shown for UI flow, but this preview imports CSV/text.</p>
+      <input id="importFile" type="file" accept=".csv,.txt,.tsv,.xlsx,.xls">
+      <textarea id="importInput" placeholder="Business Name, IG Handle, Category, Phone, Email, Notes"></textarea><br><br>
+      <button id="parseImportBtn" class="primary">PREVIEW IMPORT</button><br><br>
+      <button id="importFileBtn" class="primary">IMPORT FILE</button>
+      <div id="importSummary" class="importSummary"></div>
+    </div>
+    <div id="importPreview"></div>
+  </section>
+</main>
+<nav class="bottomNavSimple">
+  <button class="nav active" data-p="leads">LEADS</button>
+  <button class="nav navPlus" data-p="add" aria-label="Add lead">+</button>
+  <button class="nav" data-p="import">IMPORT</button>
+</nav>
+<script>
+const STATUSES=["NEW LEAD","ENGAGED","FIRST DM","FOLLOW UP 1","FOLLOW UP 2","REPLIED","CLOSED","NOT INTERESTED","DEAD"];
+const PRIORITIES=["NEW LEAD","HIGH","MEDIUM","LOW","DEAD"];
+const CATEGORIES=["Contractor","Beauty / Aesthetics","Real Estate","Fitness","Dentist","Salon","Coach","Restaurant","Retail","Other"];
+const PC={"NEW LEAD":"#00d4ff",HIGH:"#22c55e",MEDIUM:"#facc15",LOW:"#ef4444",DEAD:"#36454f"};
+let leads=[
+{"id":"IMP1-1","igHandle":"@climatisationacg","business":"Climatisation ACG","category":"HVAC Contractor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-2","igHandle":"@b.airhvac","business":"Boris Liamine Air HVAC","category":"HVAC Contractor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-3","igHandle":"@lesentreprisesas","business":"MR HVAC - Les Entreprises A.S","category":"HVAC Contractor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-4","igHandle":"@sarahsellsmtl","business":"Sarah Thacker Real Estate","category":"Realtor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-5","igHandle":"@themontrealrealtor","business":"Jihane Guettar Real Estate","category":"Realtor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-6","igHandle":"@thussa.jey.realestate","business":"Thussa Jey Real Estate","category":"Realtor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-7","igHandle":"@sellingmtl","business":"Anthony Gentile Real Estate","category":"Realtor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-8","igHandle":"@el.realty","business":"Eliane Levinzon Realty","category":"Realtor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-9","igHandle":"@montreal_landscaping","business":"David Margo Landscaping","category":"Landscaping","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-10","igHandle":"@plantenance_landscapes","business":"Design Plantenance","category":"Landscaping","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-11","igHandle":"@mtllandscaping","business":"MTL Landscaping","category":"Landscaping","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-12","igHandle":"@oaklnddesign","business":"Oak Landscape Design","category":"Landscaping","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-13","igHandle":"@thecleanpanther","business":"The Clean Panther","category":"Cleaning Service","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-14","igHandle":"@axiomcleaningservice","business":"Axiom Cleaning Service","category":"Cleaning Service","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-15","igHandle":"@nettoyage_procleaning","business":"Nettoyage Pro Cleaning","category":"Cleaning Service","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-16","igHandle":"@doctor.wisdom","business":"Dr. Wisdom Dentist","category":"Dentist","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-17","igHandle":"@drantoyoussef","business":"Dr. Anto Youssef Dentist","category":"Dentist","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-18","igHandle":"@drmardi","business":"Dr. Mardi Dentist","category":"Dentist","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-19","igHandle":"@matthewmuskettpainting","business":"Matthew Muskett Painting","category":"Painting Contractor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP1-20","igHandle":"@qa_painting","business":"QA Painting","category":"Painting Contractor","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-21","igHandle":"@peaumontreal","business":"PEAU Montr√©al","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-22","igHandle":"@cliniquechloe","business":"Clinique Chlo√©","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-23","igHandle":"@clini.derma","business":"Clini-Derma","category":"Medspa / Laser Dermatology","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-24","igHandle":"@stationlmtl","business":"Station L Medispa","category":"Medspa / Injectables & Laser","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-25","igHandle":"@centreesthetiquemontreal","business":"Centre Esth√©tique Montr√©al","category":"Medspa / Laser & Injectables","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-26","igHandle":"@amismedspa","business":"Amis Medspa","category":"Medspa / Fillers & Botox","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-27","igHandle":"@dermanoormedspa","business":"Dermanoor Medspa","category":"Medspa / Botox Fillers Laser","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-28","igHandle":"@vivaderm_aesthetic.clinic","business":"Vivaderm Aesthetic Clinic","category":"Medspa / Skin Rejuvenation","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-29","igHandle":"@botoxmontreal","business":"Botox Montreal","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-30","igHandle":"@idealbodyclinic","business":"Ideal Body Clinic","category":"Medspa / Body Contouring","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-31","igHandle":"@esthetique.mk","business":"Clinique M√©dico Esth√©tique MK","category":"Medspa / Botox & Fillers","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-32","igHandle":"@cliniqueag","business":"Clinique AG","category":"Medspa / Injectables & Laser","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-33","igHandle":"@mlaesthetic.clinic","business":"ML Aesthetic Clinic","category":"Medspa / Acne & Skin","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-34","igHandle":"@dermamode.mtl","business":"Dermamode","category":"Medspa / Laser Hair Removal","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-35","igHandle":"@cliniquefacemd","business":"Clinique Face MD","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-36","igHandle":"@sknmd.ca","business":"SKN MD","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-37","igHandle":"@chiclasermontreal","business":"CHIC Laser Centre","category":"Medspa / Laser & Fillers","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-38","igHandle":"@nuvomedispa","business":"Nuvo Medispa","category":"Medspa / Skin & Body","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-39","igHandle":"@medispa.maisonneuve","business":"Medispa de Maisonneuve","category":"Medspa / Anti-Aging","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-40","igHandle":"@cliniquehoma","business":"Clinique Esth√©tique HoMa","category":"Medspa / Physician-Led Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-41","igHandle":"@cliniquelaflamme","business":"Clinique Laflamme","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-42","igHandle":"@ipllab_medispa","business":"IPL Lab Medispa Laval","category":"Medspa / Laser & Skin","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-43","igHandle":"@catarinateodoro_beautycompany","business":"Clinic C. Teodoro","category":"Medspa / Beauty & Injectables","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-44","igHandle":"@victoriaparkmedispa","business":"Victoria Park Medispa","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-45","igHandle":"@cliniqueversamd","business":"Clinique Versa MD","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-46","igHandle":"@mediluxe_clinic","business":"Mediluxe Clinic","category":"Medspa / Skin Rejuvenation","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-47","igHandle":"@3dlifestylecanada","business":"3DLifestyle Canada","category":"Medspa / Botox & Laser","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-48","igHandle":"@dermapure","business":"Dermapure Old Montreal","category":"Medspa / Dermo-Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-49","igHandle":"@myeva_medical_spa","business":"MYEVA Medical Spa","category":"Medspa / Medical Aesthetics","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"},
+{"id":"IMP2-50","igHandle":"@bsculpt.medispa","business":"B-Sculpt Medispa","category":"Medspa / Body Sculpting","phone":"","email":"","status":"NEW LEAD","priority":"NEW LEAD","notes":"","lastContact":"2026-06-03T00:00:00Z"}
+];
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){let t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.x);toast.x=setTimeout(()=>t.style.display="none",1200)}
+function norm(v){let c=String(v||"").trim().replace(/^@/,"");return c?"@"+c:""}
+function user(v){return norm(v).replace("@","")}
+function init(v){v=String(v||"").replace("@","").trim();return (v.slice(0,2)||"AX").toUpperCase()}
+function dt(v){let d=new Date(v);return isNaN(d)?new Date():d}
+function sd(v){if(!v)return"None";return dt(v).toLocaleDateString("en-US",{month:"short",day:"numeric"})}
+function nextDate(l){if(["CLOSED","NOT INTERESTED","DEAD"].includes(l.status))return"";let b=dt(l.lastContact||new Date()),o={"NEW LEAD":0,"ENGAGED":1,"FIRST DM":5,"FOLLOW UP 1":7,"FOLLOW UP 2":7,"REPLIED":0};if(!(l.status in o))return"";b.setDate(b.getDate()+o[l.status]);return b.toISOString()}
+function opts(a,s){return a.map(x=>`<option value="${esc(x)}" ${x===s?"selected":""}>${esc(x)}</option>`).join("")}
+function phoneSvg(){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 11.19 19a19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.63 2.6a2 2 0 0 1-.45 2.11L8 9.67a16 16 0 0 0 6.33 6.33l1.24-1.24a2 2 0 0 1 2.11-.45c.83.3 1.7.51 2.6.63A2 2 0 0 1 22 16.92z"/></svg>'}
+function mailSvg(){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="m22 6-10 7L2 6"/></svg>'}
+function filtered(){let q=$("#search").value.toLowerCase().trim(),s=$("#fStatus").value,p=$("#fPriority").value,c=$("#fCategory").value;return leads.filter(l=>(!q||[l.igHandle,l.business,l.category,l.notes].join(" ").toLowerCase().includes(q))&&(s==="All Status"||l.status===s)&&(p==="All Priority"||l.priority===p)&&(c==="All Categories"||l.category===c))}
+function card(l){let u=user(l.igHandle),ne=nextDate(l),no=!String(l.notes||"").trim();return `<article class="leadCard" style="--lead-glow:${PC[l.priority]||"#00d4ff"}"><div class="leadTop"><div class="avatar">${init(l.igHandle||l.business)}</div><div class="identity"><div class="handle">${esc(l.igHandle||"@unknown")}</div><div class="business">${esc(l.business)} · ${esc(l.category)}</div><div class="contactIcons"><a class="contactIcon ${l.phone?"":"disabled"}" href="#">${phoneSvg()}</a><a class="contactIcon ${l.email?"":"disabled"}" href="#">${mailSvg()}</a></div></div><div class="igActions"><button class="miniBtn copyBtn" data-copy="${esc(u)}">COPY IG</button><a class="openBtn" href="https://instagram.com/${esc(u)}" target="_blank">OPEN IG</a></div></div><div class="divider"></div><div class="controlRow"><div class="inline"><select class="pill statusSelect" data-v="${esc(l.status)}">${opts(STATUSES,l.status)}</select><select class="pill prioritySelect" data-v="${esc(l.priority)}">${opts(PRIORITIES,l.priority)}</select></div><div class="lastContact"><span>Last: ${sd(l.lastContact)}</span><span class="nextDate">Next: ${ne?sd(ne):"None"}</span></div></div><div class="notesWrap ${no?"emptyNote":""}"><div class="notesHeader"><span>NOTES</span><button class="editNoteBtn">EDIT</button></div><textarea class="notes">${esc(l.notes)}</textarea></div><button class="showNotesBtn ${no?"":"hidden"}">Notes</button></article>`}
+function render(){let list=filtered();$("#count").textContent=leads.length;$("#visible").textContent=list.length;$("#total").textContent=leads.length;$("#high").textContent=leads.filter(l=>l.priority==="HIGH").length;$("#replied").textContent=leads.filter(l=>["REPLIED","ENGAGED","CLOSED"].includes(l.status)).length;$("#active").textContent=leads.filter(l=>!["CLOSED","NOT INTERESTED","DEAD"].includes(l.status)).length;$("#leadList").innerHTML=list.map(card).join("")||'<div class="empty">No leads found.</div>';$$(".copyBtn").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.copy);toast("IG copied")});$$(".showNotesBtn").forEach(b=>b.onclick=()=>{let card=b.closest(".leadCard");$(".notesWrap",card)?.classList.remove("emptyNote");b.classList.add("hidden")})}
+function splitLine(line){let out=[],cur="",q=false;for(let i=0;i<line.length;i++){let ch=line[i],n=line[i+1];if(ch=='"'&&q&&n=='"'){cur+='"';i++;continue}if(ch=='"'){q=!q;continue}if((ch===','||ch==='\t')&&!q){out.push(cur.trim());cur='';continue}cur+=ch}out.push(cur.trim());return out}
+function mapHead(arr){let m={};arr.forEach((x,i)=>{let k=String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");if(["business","businessname","company","companyname","name"].includes(k))m.business=i;else if(["ighandle","instagram","instagramhandle","ig","handle","username","profile"].includes(k))m.ig=i;else if(["category","industry","niche","type"].includes(k))m.category=i;else if(["phone","phonenumber","tel","telephone","number"].includes(k))m.phone=i;else if(["email","emailaddress","e-mail"].includes(k))m.email=i;else if(["notes","note","description","details"].includes(k))m.notes=i});return m}
+function parseRows(text){let lines=String(text||"").replaceAll('\r','').split('\n').map(x=>x.trim()).filter(Boolean);if(!lines.length)return[];let head=splitLine(lines[0]),m=mapHead(head),has=m.business!==undefined||m.ig!==undefined||m.category!==undefined,start=has?1:0;if(!has)m={business:0,ig:1,category:2,phone:3,email:4,notes:5};return lines.slice(start).map(line=>{let c=splitLine(line),lead={business:c[m.business]||"",igHandle:norm(c[m.ig]||""),category:c[m.category]||"Other",phone:c[m.phone]||"",email:c[m.email]||"",notes:c[m.notes]||""},err=[];if(!lead.business)err.push("Missing business");if(!lead.igHandle)err.push("Missing IG");if(!lead.category)err.push("Missing category");if(lead.igHandle&&leads.some(l=>String(l.igHandle).toLowerCase()===lead.igHandle.toLowerCase()))err.push("Already in CRM");return {...lead,_errors:err}})}
+function addImported(rows){let good=rows.filter(r=>!r._errors.length);if(!good.length){toast("No valid leads");return}good.forEach(r=>leads.unshift({id:"L-"+Date.now()+"-"+Math.floor(Math.random()*9999),igHandle:r.igHandle,business:r.business,category:r.category,phone:r.phone,email:r.email,status:"NEW LEAD",priority:"NEW LEAD",notes:r.notes,lastContact:new Date().toISOString()}));render();switchPage("leads");toast(good.length+" leads added to CRM")}
+function previewImport(){let rows=parseRows($("#importInput").value);window._rows=rows;let good=rows.filter(r=>!r._errors.length),bad=rows.length-good.length;$("#importSummary").textContent=`${good.length} ready · ${bad} need review`;$("#importPreview").innerHTML=rows.map(r=>`<div class="importPreviewCard ${r._errors.length?"importBad":"importGood"}"><strong>${esc(r.business||"Missing business")} · ${esc(r.igHandle||"Missing IG")}</strong><span>${esc(r.category||"Missing category")} ${r.phone?"· "+esc(r.phone):""} ${r.email?"· "+esc(r.email):""}</span>${r._errors.length?`<span style="color:#ef4444">Issues: ${esc(r._errors.join(", "))}</span>`:`<span style="color:#00d4ff">Ready</span>`}</div>`).join("")+`<div class="importActions"><button id="addReadyBtn" class="primary">ADD READY LEADS</button></div>`;let btn=$("#addReadyBtn");if(btn)btn.onclick=()=>addImported(window._rows||[])}
+function importFile(){let f=$("#importFile").files[0];if(!f){toast("Choose a file first");return}let name=(f.name||"").toLowerCase();if(name.endsWith(".xlsx")||name.endsWith(".xls")){toast("Excel upload UI added. CSV works in this preview.");return}let reader=new FileReader();reader.onload=e=>{$("#importInput").value=e.target.result||"";addImported(parseRows($("#importInput").value))};reader.readAsText(f)}
+function addLead(){let h=norm($("#aHandle").value);if(!h){toast("IG handle required");return}leads.unshift({id:"L-"+Date.now(),igHandle:h,business:$("#aBusiness").value||"No business name",category:$("#aCategory").value,phone:$("#aPhone").value,email:$("#aEmail").value,status:"NEW LEAD",priority:"NEW LEAD",notes:$("#aNotes").value,lastContact:new Date().toISOString()});["aBusiness","aHandle","aPhone","aEmail","aNotes"].forEach(id=>$("#"+id).value="");render();switchPage("leads");toast("Lead added to CRM")}
+function switchPage(p){$$(".page").forEach(x=>x.classList.remove("active"));$("#"+p)?.classList.add("active");$$(".nav").forEach(x=>x.classList.toggle("active",x.dataset.p===p))}
+document.addEventListener("DOMContentLoaded",()=>{$("#fStatus").innerHTML="<option>All Status</option>"+STATUSES.map(x=>`<option>${x}</option>`).join("");$("#fPriority").innerHTML="<option>All Priority</option>"+PRIORITIES.map(x=>`<option>${x}</option>`).join("");$("#fCategory").innerHTML="<option>All Categories</option>"+CATEGORIES.map(x=>`<option>${x}</option>`).join("");$("#aCategory").innerHTML=opts(CATEGORIES,"Contractor");["search","fStatus","fPriority","fCategory"].forEach(id=>{$("#"+id).oninput=render;$("#"+id).onchange=render});$$(".nav").forEach(b=>b.onclick=()=>switchPage(b.dataset.p));$("#syncBtn").onclick=()=>toast("Offline preview only");$("#addBtn").onclick=addLead;$("#parseImportBtn").onclick=previewImport;$("#importFileBtn").onclick=importFile;render()});
+</script>
+</body>
+</html>
