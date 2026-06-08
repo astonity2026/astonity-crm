@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Astonity CRM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@500;700;900&display=swap');
+*{box-sizing:border-box}
+:root{--bg:#050816;--line:rgba(79,142,247,.22);--cyan:#00d4ff;--orange:#ff8c00;--text:#e5f4ff;--muted:rgba(229,244,255,.58)}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:'Michroma','Orbitron',sans-serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{padding-bottom:86px;background:radial-gradient(circle at 20% -5%,rgba(0,212,255,.12),transparent 30%),#050816}
+button,input,select,textarea,a{font:inherit}button{cursor:pointer}
+.top{position:sticky;top:0;z-index:10;background:rgba(5,8,22,.96);border-bottom:1px solid var(--line);padding:8px 10px 8px;backdrop-filter:blur(14px)}
+.eyebrow{font-size:7px;letter-spacing:1.8px;color:var(--cyan);opacity:.78;line-height:1.2}
+.title{display:grid;grid-template-columns:1fr 120px;gap:8px;align-items:start;margin-top:6px}
+h1{margin:0;font-size:20px;line-height:.95;letter-spacing:.5px}.blue{display:block;color:var(--cyan);text-shadow:0 0 12px rgba(0,212,255,.45)}
+.headerRight{min-width:120px;text-align:right}.small{font-size:8px;line-height:1.15;color:var(--muted)}
+.syncBtn{margin-top:4px;width:100%;min-height:28px;padding:5px 6px;font-size:7.5px;border-radius:8px;border:1px solid rgba(255,140,0,.45);background:rgba(255,140,0,.08);color:var(--orange);font-weight:1000}
+.sync{font-size:7px;line-height:1.2;margin-top:3px;color:var(--orange)}
+.wrap{padding:8px 8px 14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.stat{border:1px solid var(--line);background:rgba(229,244,255,.045);border-radius:11px;padding:8px 8px}
+.stat strong{display:block;color:var(--cyan);font-size:16px;line-height:1}.stat span{font-size:6.5px;color:var(--muted)}
+.filters{display:grid;gap:6px;margin-bottom:8px}
+input,select,textarea{width:100%;border:1px solid rgba(79,142,247,.28);background:#06101f;color:var(--text);border-radius:10px;padding:10px 9px;outline:none}
+#search{min-height:34px;font-size:11px}.filterRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.filterRow select{min-height:34px;padding:7px 8px;font-size:8px}
+.section{margin:10px 0 7px;font-size:9px;letter-spacing:1.4px;color:var(--cyan);font-weight:900}
+.leadList{display:grid;gap:6px}
+.leadCard{position:relative;padding:8px 8px 7px;border-radius:14px;background:linear-gradient(135deg,rgba(15,34,56,.82),rgba(6,15,28,.92));border:1px solid rgba(58,123,184,.30);border-left-width:4px;box-shadow:inset 0 0 0 1px rgba(0,212,255,.05),0 8px 18px rgba(0,0,0,.18);overflow:hidden}
+.leadCard::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:4px;border-radius:0 999px 999px 0;background:var(--lead-glow,#00d4ff)}
+.leadTop{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start}
+.avatar{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:10px;font-weight:1000;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.40);cursor:pointer}
+.identity{padding-right:120px}.handle{font-size:11px;font-weight:1000;line-height:1.05}.business{font-size:9px;line-height:1.15;margin-top:2px;color:rgba(229,244,255,.68)}
+.contactIcons{display:flex;gap:6px;margin-top:5px}.contactIcon{width:38px;height:22px;border-radius:7px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.24);display:flex;align-items:center;justify-content:center;color:var(--cyan);text-decoration:none}
+.contactIcon svg{width:12px;height:12px;stroke:var(--cyan)}.contactIcon.disabled{opacity:.3;pointer-events:none}
+.igActions{position:absolute;top:8px;right:8px;display:flex;gap:6px;align-items:center}
+.miniBtn,.openBtn,.primary{display:flex;align-items:center;justify-content:center;width:56px;min-width:56px;height:24px;min-height:24px;padding:4px 4px;border-radius:9px;font-size:7px;border:1px solid rgba(0,212,255,.34);background:rgba(0,212,255,.07);color:var(--cyan);text-decoration:none;font-weight:1000}
+.primary{width:100%;min-width:0;height:34px;min-height:34px;font-size:9px}
+.divider{height:1px;background:rgba(79,142,247,.16);margin:6px 0 7px}
+.controlRow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin-bottom:6px}
+.inline{display:flex;gap:6px}
+.pill,.statusSelect,.prioritySelect{width:104px!important;min-width:104px!important;max-width:104px!important;height:27px;min-height:27px;padding:4px 18px 4px 7px!important;font-size:7px!important;border-radius:999px;background:rgba(5,11,22,.95);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.statusSelect[data-v="NEW LEAD"],.prioritySelect[data-v="NEW LEAD"]{color:#00d4ff;border-color:rgba(0,212,255,.65)}
+.statusSelect[data-v="FIRST DM"]{color:#38bdf8;border-color:rgba(56,189,248,.65)}
+.statusSelect[data-v="FOLLOW UP 1"],.statusSelect[data-v="FOLLOW UP 2"],.prioritySelect[data-v="MEDIUM"]{color:#facc15;border-color:rgba(250,204,21,.65)}
+.statusSelect[data-v="REPLIED"],.statusSelect[data-v="CLOSED"],.prioritySelect[data-v="HIGH"]{color:#22c55e;border-color:rgba(34,197,94,.65)}
+.statusSelect[data-v="ENGAGED"]{color:#a78bfa;border-color:rgba(167,139,250,.65)}
+.statusSelect[data-v="NOT INTERESTED"],.prioritySelect[data-v="LOW"]{color:#ef4444;border-color:rgba(239,68,68,.65)}
+.statusSelect[data-v="DEAD"],.prioritySelect[data-v="DEAD"]{color:#94a3b8;border-color:rgba(54,69,79,.85)}
+.lastContact{font-size:8px!important;gap:8px!important;white-space:nowrap!important;display:flex!important;align-items:center!important;justify-content:flex-end!important}
+.lastContact .dateBtn{background:transparent!important;border:0!important;color:inherit!important;padding:0!important;margin:0!important;font:inherit!important;cursor:pointer!important}
+.lastContact .nextDate{color:#ff8c00!important}
+.datePickerRow{display:none;gap:6px;margin-top:6px}.leadCard.dateOpen .datePickerRow{display:grid;grid-template-columns:1fr 1fr}
+.dateField label{display:block;font-size:8px;color:rgba(229,244,255,.45);font-weight:1000;margin-bottom:3px}.dateField input{width:100%;min-height:34px;font-size:9px;border:1px solid rgba(79,142,247,.28);background:#06101f;color:#e5f4ff;border-radius:10px;padding:8px 8px}
+.notesWrap{padding:7px;border-radius:10px;background:rgba(0,13,26,.42);border:1px solid rgba(0,212,255,.18)}.notesWrap.emptyNote{display:none}
+.notesHeader{display:flex;justify-content:space-between;font-size:8px;margin-bottom:5px;color:rgba(229,244,255,.48);font-weight:1000}
+.editNoteBtn{background:transparent;border:0;color:var(--cyan);font-size:8px;font-weight:1000}.notes{min-height:40px;font-size:9px;line-height:1.3;border:0;background:transparent;padding:0}
+.showNotesBtn{width:100%;height:26px;min-height:26px;border-radius:8px;font-size:8px;margin-top:5px;border:1px solid rgba(0,212,255,.24);background:rgba(0,212,255,.06);color:var(--cyan)}
+.hidden{display:none!important}.page{display:none}.page.active{display:block}.card{border:1px solid var(--line);background:rgba(229,244,255,.045);border-radius:14px;padding:12px;margin-bottom:10px}
+.importToggleBtn{width:100%!important;min-height:36px!important;border-radius:10px!important;border:1px solid rgba(0,212,255,.34)!important;background:rgba(0,212,255,.07)!important;color:#00d4ff!important;font-size:9px!important;font-weight:1000!important;display:flex!important;align-items:center!important;justify-content:center!important;margin-bottom:10px!important}
+.importPanel{display:none}.importPanel.open{display:block}
+.importHint{font-size:10px;color:var(--muted);line-height:1.5;margin:0 0 8px}#importFile{margin-bottom:8px;min-height:40px}#importInput{min-height:150px;font-size:10px}
+.importSummary{color:var(--orange);font-size:10px;font-weight:1000;margin-top:8px}.importPreviewCard{border:1px solid var(--line);background:rgba(0,13,26,.42);border-radius:12px;padding:9px;margin-bottom:7px}.importPreviewCard strong{font-size:11px}.importPreviewCard span{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.importBad{border-left:4px solid #ef4444}.importGood{border-left:4px solid var(--cyan)}.importActions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.expanded{display:none;margin-top:7px!important;border-radius:10px!important;padding:8px!important;border:1px solid rgba(0,212,255,.18)!important;background:rgba(0,13,26,.46)!important}.leadCard.open .expanded{display:block!important}
+.expandedTitle{color:#00d4ff!important;font-size:9px!important;font-weight:1000!important;letter-spacing:1px!important;margin-bottom:8px!important}.expandedGrid{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+.expandedField label{display:block!important;font-size:8px!important;color:rgba(229,244,255,.45)!important;font-weight:1000!important;margin-bottom:3px!important}.expandedField input,.expandedField select,.expandedField textarea{width:100%!important;min-height:36px!important;font-size:9px!important;border:1px solid rgba(79,142,247,.28)!important;background:#06101f!important;color:#e5f4ff!important;border-radius:10px!important;padding:9px 8px!important}.expandedField textarea{min-height:64px!important}
+.collapse{margin-top:8px!important;width:100%!important;min-height:30px!important;border-radius:8px!important;font-size:8px!important;border:1px solid rgba(0,212,255,.24)!important;background:rgba(0,212,255,.06)!important;color:#00d4ff!important}
+.bottomNavSimple{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(5,8,22,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(14px)}
+.bottomNavSimple .nav{min-height:40px;border-radius:12px;font-size:9px;background:transparent;color:rgba(229,244,255,.42);border:0;font-weight:1000}.bottomNavSimple .nav.active{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.22)}
+.bottomNavSimple .navPlus{width:54px;min-width:54px;height:54px;min-height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;font-weight:700;background:rgba(0,212,255,.12);color:#00d4ff;border:1px solid rgba(0,212,255,.32);box-shadow:0 0 0 1px rgba(0,212,255,.08) inset}
+.empty{padding:28px 12px;color:rgba(229,244,255,.45);text-align:center;font-size:12px}
+
+/* SYNC PROGRESS BAR */
+.syncProgress{
+  display:none;
+  width:100%;
+  height:4px;
+  margin-top:4px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,140,0,.16);
+  border:1px solid rgba(255,140,0,.22);
+}
+.syncProgress.active{
+  display:block;
+}
+.syncProgressBar{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+  background:#ff8c00;
+  transition:width .22s ease;
+}
+
+
+/* ASTONITY OS TODAY + TASKS */
+.glanceTitle{margin:3px 0 7px;font-size:8px;letter-spacing:2.6px;color:#8fc8ff;font-weight:1000;text-transform:uppercase;text-shadow:0 0 10px rgba(0,212,255,.28)}
+.glanceRail{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:8px}
+.glanceCard{--glance:#00d4ff;position:relative;min-height:68px;border-radius:10px;border:1px solid color-mix(in srgb,var(--glance) 42%,transparent);background:linear-gradient(135deg,rgba(15,34,56,.55),rgba(6,15,28,.88));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--glance) 9%,transparent),0 6px 13px rgba(0,0,0,.18),0 0 14px color-mix(in srgb,var(--glance) 8%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px 3px;text-align:center;overflow:hidden;color:var(--text)}
+.glanceValue{font-size:16px;line-height:.95;color:#f5fbff;font-weight:1000;text-shadow:0 0 10px rgba(255,255,255,.14)}
+.glanceLabel{font-size:5.5px;line-height:1.05;color:rgba(229,244,255,.68);font-weight:1000;letter-spacing:.18px;text-transform:uppercase}
+.glanceSub{font-size:5.3px;line-height:1.05;color:var(--glance);font-weight:1000;min-height:7px;text-shadow:0 0 8px color-mix(in srgb,var(--glance) 42%,transparent)}
+.todayCard{--glance:#4aa3ff}.overdueCard{--glance:#ff8c00}.astonityCard{--glance:#4aa3ff}.personalCard{--glance:#a855f7}.completedCard{--glance:#45dfd4}
+.todayCard.alertGreen{--glance:#22c55e!important;border-color:rgba(34,197,94,.72)!important;background:rgba(34,197,94,.10)!important}
+.overdueCard.alertRed{--glance:#ef4444!important;border-color:rgba(239,68,68,.72)!important;background:rgba(239,68,68,.10)!important}
+.sourceNote{font-size:8px;color:rgba(229,244,255,.48);line-height:1.4;margin:0 0 8px}
+.todayQueue{border:1px solid var(--line);background:rgba(229,244,255,.035);border-radius:14px;margin:10px 0;overflow:hidden}
+.queueToggle{width:100%;min-height:44px;border:0;background:linear-gradient(135deg,rgba(15,34,56,.72),rgba(6,15,28,.92));color:var(--cyan);display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:10px;text-align:left;font-size:9px;letter-spacing:1.2px;font-weight:1000}
+.queueToggle span:nth-child(2){min-width:28px;height:24px;border-radius:999px;border:1px solid rgba(0,212,255,.32);background:rgba(0,212,255,.07);color:var(--cyan);display:grid;place-items:center;font-size:8px}
+.queueChevron{transition:transform .18s ease}.queueBody{display:grid;gap:6px;padding:8px;border-top:1px solid rgba(79,142,247,.16)}
+.todayQueue.collapsed .queueBody{display:none}.todayQueue.collapsed .queueChevron{transform:rotate(-90deg)}
+.todayLeadCard{position:relative;padding:8px;border-radius:14px;background:linear-gradient(135deg,rgba(15,34,56,.82),rgba(6,15,28,.92));border:1px solid rgba(58,123,184,.30);border-left:4px solid var(--todayGlow,#00d4ff)}
+.todayLeadTop{display:grid;grid-template-columns:30px 1fr;gap:8px}
+.todayLeadMeta{font-size:8px;color:rgba(229,244,255,.56);margin-top:3px}
+.todayLeadActions{margin-top:8px;display:grid;gap:6px}
+.todayStatusSelect{height:32px!important;min-height:32px!important;border-radius:9px!important;font-size:8px!important;color:var(--cyan)!important}
+.taskFormPanel{display:none}.taskFormPanel.open{display:block}
+.taskFilters{display:flex;gap:6px;overflow-x:auto;padding:8px 0;scrollbar-width:none}.taskFilters::-webkit-scrollbar{display:none}
+.taskFilter{min-height:30px;border-radius:999px;padding:4px 10px;font-size:7px;border:1px solid rgba(79,142,247,.28);background:rgba(5,11,22,.95);color:rgba(229,244,255,.58);font-weight:1000;white-space:nowrap}
+.taskFilter.active{color:var(--cyan);border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.08)}
+.taskList{display:grid;gap:6px}
+.taskItem{--taskAccent:#facc15;--projectAccent:#4aa3ff;position:relative;display:grid;grid-template-columns:28px 1fr 24px;gap:8px;align-items:center;padding:8px;border-radius:14px;border:1px solid rgba(58,123,184,.30);border-left:4px solid var(--taskAccent);background:linear-gradient(135deg,rgba(15,34,56,.82),rgba(6,15,28,.92))}
+.taskItem.dragging{opacity:.5}.taskItem.dragOver{border-color:rgba(0,212,255,.75);background:rgba(0,212,255,.07)}
+.taskCheck{width:22px;height:22px;border-radius:999px;border:1.5px solid var(--taskAccent);background:rgba(0,13,26,.35);box-shadow:0 0 10px color-mix(in srgb,var(--taskAccent) 22%,transparent)}
+.taskCheck.done{background:var(--taskAccent)}
+.taskMain{min-width:0;cursor:pointer}.taskTitle{font-size:10px;line-height:1.15;color:#f5fbff;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.taskItem.done .taskTitle{text-decoration:line-through;color:rgba(229,244,255,.45)}
+.taskMeta{margin-top:3px;font-size:6.8px;color:rgba(229,244,255,.46);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.taskDelete{width:24px;height:24px;border-radius:999px;border:0;background:transparent;color:rgba(229,244,255,.35);font-size:16px}
+.taskEditPanel{display:none;grid-column:1 / -1;margin-top:2px;padding:8px;border-radius:10px;border:1px solid rgba(0,212,255,.16);background:rgba(0,13,26,.34);gap:7px}
+.taskItem.editing .taskEditPanel{display:grid}.taskEditGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.taskEditGrid .wide{grid-column:1 / -1}
+.taskEditPanel label{display:block;font-size:6.4px;color:rgba(229,244,255,.42);font-weight:1000;text-transform:uppercase;margin-bottom:3px}
+.taskEditPanel input,.taskEditPanel select{min-height:30px!important;border-radius:9px!important;font-size:8px!important;padding:8px!important}
+.bottomNavSimple{grid-template-columns:repeat(4,1fr)!important}
+@media(max-width:390px){.glanceRail{gap:3px}.glanceCard{min-height:64px;padding:5px 2px}.glanceValue{font-size:15px}.glanceLabel,.glanceSub{font-size:5px}}
+
+
+/* TODAY CRM CARD SAFE SPACING */
+.queueBody .leadCard{
+  margin:0;
+}
+
+</style>
+</head>
+<body>
+<div id="toast" style="display:none;position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99;border:1px solid rgba(0,212,255,.42);background:#071629;color:#00d4ff;border-radius:999px;padding:10px 14px;font-size:12px;font-weight:1000"></div>
+<header class="top">
+  <div class="eyebrow">SYSTEM ONLINE · ASTONITY OS</div>
+  <div class="title">
+    <h1>ASTONITY <span class="blue">OS</span></h1>
+    <div class="headerRight">
+      <div class="small"><span id="count">0</span> leads tracked</div>
+      <button id="syncBtn" class="syncBtn">Sync Now</button>
+      <div id="syncText" class="sync">Starting...</div><div id="syncProgress" class="syncProgress"><div id="syncProgressBar" class="syncProgressBar"></div></div>
+      <div class="sync" style="color:rgba(229,244,255,.45)">Firebase live · Sheets mirror 8 AM · 1 PM · 6:30 PM</div>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+
+  <section id="today" class="page active">
+    <div class="glanceTitle">TODAY AT A GLANCE</div>
+    <div class="glanceRail">
+      <button class="glanceCard todayCard" type="button" data-jump="tasksToday">
+        <div class="glanceValue" id="glanceTodayTasks">0</div>
+        <div class="glanceLabel">Today Tasks</div>
+        <div class="glanceSub" id="glanceTodaySub">Due today</div>
+      </button>
+      <button class="glanceCard overdueCard" type="button" data-jump="tasksOverdue">
+        <div class="glanceValue" id="glanceOverdue">0</div>
+        <div class="glanceLabel">Overdue</div>
+        <div class="glanceSub" id="glanceOverdueSub">None overdue</div>
+      </button>
+      <button class="glanceCard astonityCard" type="button" data-jump="tasksAstonity">
+        <div class="glanceValue" id="glanceAstonity">0</div>
+        <div class="glanceLabel">Astonity</div>
+        <div class="glanceSub">Open tasks</div>
+      </button>
+      <button class="glanceCard personalCard" type="button" data-jump="tasksPersonal">
+        <div class="glanceValue" id="glancePersonal">0</div>
+        <div class="glanceLabel">Personal Brand</div>
+        <div class="glanceSub">Open tasks</div>
+      </button>
+      <button class="glanceCard completedCard" type="button" data-jump="tasksCompleted">
+        <div class="glanceValue" id="glanceCompleted">0</div>
+        <div class="glanceLabel">Completed</div>
+        <div class="glanceSub">Done</div>
+      </button>
+    </div>
+
+    <div class="section">TODAY COMMAND CENTER</div>
+    <div class="sourceNote">Today pulls from the real CRM lead database. A lead is completed only when its status changes.</div>
+
+    <article class="todayQueue" id="engagementQueue">
+      <button class="queueToggle" type="button" data-q="engagementQueue">
+        <span>ENGAGEMENT</span><span id="engagementBadge">0</span><span class="queueChevron">⌄</span>
+      </button>
+      <div class="queueBody" id="engagementList"></div>
+    </article>
+
+    <article class="todayQueue" id="outreachQueue">
+      <button class="queueToggle" type="button" data-q="outreachQueue">
+        <span>OUTREACH</span><span id="outreachBadge">0</span><span class="queueChevron">⌄</span>
+      </button>
+      <div class="queueBody" id="outreachList"></div>
+    </article>
+
+    <article class="todayQueue" id="followupQueue">
+      <button class="queueToggle" type="button" data-q="followupQueue">
+        <span>FOLLOW UPS</span><span id="followupBadge">0</span><span class="queueChevron">⌄</span>
+      </button>
+      <div class="queueBody" id="followupList"></div>
+    </article>
+  </section>
+
+  <section id="tasks" class="page">
+    <div class="section">TASK MANAGER</div>
+    <button id="toggleTaskForm" class="primary" type="button">ADD TASK</button>
+    <div id="taskFormPanel" class="card taskFormPanel">
+      <input id="taskTitle" placeholder="Task title"><br><br>
+      <input id="taskDue" type="date"><br><br>
+      <select id="taskProject">
+        <option>Astonity</option>
+        <option>Personal Brand</option>
+      </select><br><br>
+      <select id="taskPriority">
+        <option>To Do</option>
+        <option>Important</option>
+        <option>URGENT</option>
+      </select><br><br>
+      <button id="saveTaskBtn" class="primary" type="button">SAVE TASK</button>
+    </div>
+
+    <div class="taskFilters" id="taskFilters">
+      <button class="taskFilter active" data-filter="all">All</button>
+      <button class="taskFilter" data-filter="today">Today</button>
+      <button class="taskFilter" data-filter="week">This Week</button>
+      <button class="taskFilter" data-filter="overdue">Overdue</button>
+      <button class="taskFilter" data-filter="completed">Completed</button>
+      <button class="taskFilter" data-filter="order">In order</button>
+      <button class="taskFilter" data-filter="Astonity">Astonity</button>
+      <button class="taskFilter" data-filter="Personal Brand">Personal Brand</button>
+    </div>
+
+    <div class="section">TASK REGISTRY</div>
+    <div id="taskList" class="taskList"></div>
+  </section>
+
+  <section id="leads" class="page">
+    <div class="stats">
+      <div class="stat"><strong id="total">0</strong><span>Total</span></div>
+      <div class="stat"><strong id="high">0</strong><span>High</span></div>
+      <div class="stat"><strong id="replied">0</strong><span>Replied</span></div>
+      <div class="stat"><strong id="active">0</strong><span>Active</span></div>
+    </div>
+    <div class="filters">
+      <input id="search" placeholder="Search handle, business, niche, notes...">
+      <div class="filterRow">
+        <select id="fStatus"></select>
+        <select id="fPriority"></select>
+        <select id="fCategory"></select>
+      </div>
+    </div>
+    <div class="section">LEAD REGISTRY · <span id="visible">0</span> RECORDS</div>
+    <div id="leadList" class="leadList"><div class="empty">Loading Firebase leads...</div></div>
+  </section>
+  <section id="add" class="page">
+    <div class="section">ADD NEW LEAD</div>
+    <button id="importToggleBtn" class="importToggleBtn" type="button">IMPORT LEADS</button>
+    <div id="importPanel" class="card importPanel">
+      <p class="importHint">Upload CSV or paste rows. CSV/text import works now.</p>
+      <input id="importFile" type="file" accept=".csv,.txt,.tsv">
+      <textarea id="importInput" placeholder="Business Name, IG Handle, Category, Phone, Email, Notes"></textarea><br><br>
+      <button id="parseImportBtn" class="primary" type="button">PREVIEW IMPORT</button><br><br>
+      <button id="importFileBtn" class="primary" type="button">IMPORT FILE</button>
+      <div id="importSummary" class="importSummary"></div>
+      <div id="importPreview"></div>
+    </div>
+    <div class="card">
+      <input id="aBusiness" placeholder="Business name"><br><br>
+      <input id="aHandle" placeholder="@instagramhandle"><br><br>
+      <select id="aCategory"></select><br><br>
+      <input id="aPhone" placeholder="Phone optional"><br><br>
+      <input id="aEmail" placeholder="Email optional"><br><br>
+      <textarea id="aNotes" placeholder="Notes optional"></textarea><br><br>
+      <button id="addBtn" class="primary" type="button">STAGE LEAD</button>
+    </div>
+  </section>
+</main>
+<nav class="bottomNavSimple">
+  <button class="nav active" data-p="today">TODAY</button>
+  <button class="nav" data-p="leads">CRM</button>
+  <button class="nav" data-p="tasks">TASKS</button>
+  <button class="nav navPlus" data
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyBJsXTmWdeUEFrC60nt4a02PCyMKB-pY_M",authDomain:"astonity-command-center.firebaseapp.com",projectId:"astonity-command-center",storageBucket:"astonity-command-center.firebasestorage.app",messagingSenderId:"708311828481",appId:"1:708311828481:web:6ba7128189da060c311800",measurementId:"G-5TE3M5RS9X"};
+const FIRESTORE_COLLECTION="leads";
+const SHEET_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwwj02Ij5pctAm6fyiwFNkJKfLnco_8-aEgJm3T1kKxBtR4Rep9AsvkP8vkm8ItCneyzg/exec";
+const SHEET_SYNC_SLOTS=[[8,0],[13,0],[18,30]];
+const LOCAL_BACKUP_KEY="astonity-crm-stable-v3-backup";
+const STATUSES=["NEW LEAD","ENGAGED","FIRST DM","FOLLOW UP 1","FOLLOW UP 2","REPLIED","CLOSED","NOT INTERESTED","DEAD"];
+const PRIORITIES=["NEW LEAD","HIGH","MEDIUM","LOW","DEAD"];
+const CATEGORIES=["Contractor","Beauty / Aesthetics","Real Estate","Fitness","Dentist","Salon","Coach","Restaurant","Retail","Other"];
+const PC={"NEW LEAD":"#00d4ff",HIGH:"#22c55e",MEDIUM:"#facc15",LOW:"#ef4444",DEAD:"#36454f"};
+const TASK_COLLECTION="tasks";
+const TASK_BACKUP_KEY="astonity-tasks-backup";
+const TASK_PROJECTS=["Astonity","Personal Brand"];
+const TASK_PRIORITIES=["URGENT","Important","To Do"];
+const DEFAULT_TASK_PROJECT="Astonity";
+const DEFAULT_TASK_PRIORITY="To Do";
+const DAILY_ENGAGEMENT_TARGET=10;
+const DAILY_OUTREACH_TARGET=10;
+let tasks=[];
+let taskFilter="all";
+let taskUnsub=null;
+let taskWriting=false;
+let engagementBatchSize=10;
+
+let db=null,firebaseReady=false,leads=[],unsub=null,writing=false;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function setSyncProgress(percent){
+  const box=$("#syncProgress"), bar=$("#syncProgressBar");
+  if(!box||!bar) return;
+  box.classList.add("active");
+  bar.style.width = Math.max(0, Math.min(100, percent)) + "%";
+}
+function hideSyncProgress(delay=500){
+  const box=$("#syncProgress"), bar=$("#syncProgressBar");
+  if(!box||!bar) return;
+  setTimeout(()=>{
+    bar.style.width="0%";
+    box.classList.remove("active");
+  }, delay);
+}
+
+function toast(m){let t=$("#toast");if(!t)return;t.textContent=m;t.style.display="block";clearTimeout(toast.x);toast.x=setTimeout(()=>t.style.display="none",1400)}
+function norm(v){let c=String(v||"").trim().replace(/^@/,"");return c?"@"+c:""}
+function user(v){return norm(v).replace("@","")}
+function initText(v){v=String(v||"").replace("@","").trim();return(v.slice(0,2)||"AX").toUpperCase()}
+function now(){return new Date().toISOString()}
+function dt(v){let d=new Date(v);return isNaN(d)?new Date():d}
+function sd(v){if(!v)return"None";return dt(v).toLocaleDateString("en-US",{month:"short",day:"numeric"})}
+function opts(a,s){return a.map(x=>`<option value="${esc(x)}" ${x===s?"selected":""}>${esc(x)}</option>`).join("")}
+function toIsoDateValue(v){if(!v)return"";let d=new Date(v+"T12:00:00");return isNaN(d)?"":d.toISOString()}
+function calcNextAction(l){if(["CLOSED","NOT INTERESTED","DEAD"].includes(l.status))return"";let b=dt(l.lastContact||l.dateAdded||now()),o={"NEW LEAD":0,"ENGAGED":1,"FIRST DM":5,"FOLLOW UP 1":7,"FOLLOW UP 2":7,"REPLIED":0};if(!(l.status in o))return"";b.setDate(b.getDate()+o[l.status]);return b.toISOString()}
+function phoneSvg(){return'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 11.19 19a19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.63 2.6a2 2 0 0 1-.45 2.11L8 9.67a16 16 0 0 0 6.33 6.33l1.24-1.24a2 2 0 0 1 2.11-.45c.83.3 1.7.51 2.6.63A2 2 0 0 1 22 16.92z"/></svg>'}
+function mailSvg(){return'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="m22 6-10 7L2 6"/></svg>'}
+function normalizeLead(x){let l={id:String(x.id||"").trim()||("LEAD-"+Date.now()+"-"+Math.floor(Math.random()*99999)),dateAdded:x.dateAdded||now(),igHandle:norm(x.igHandle||x.handle||""),business:x.business||"No business name",category:x.category||"Other",phone:x.phone||"",email:x.email||"",status:x.status||"NEW LEAD",priority:x.priority||"NEW LEAD",notes:x.notes||"",lastContact:x.lastContact||x.dateAdded||now(),nextAction:x.nextAction||"",source:x.source||"CRM",owner:x.owner||"Flo",updatedAt:x.updatedAt||now()};if(!l.nextAction)l.nextAction=calcNextAction(l);return l}
+function saveBackup(){localStorage.setItem(LOCAL_BACKUP_KEY,JSON.stringify(leads))}
+function loadBackup(){try{return JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY)||"[]").map(normalizeLead)}catch(e){return[]}}
+function filtered(){let q=($("#search")?.value||"").toLowerCase().trim(),s=$("#fStatus")?.value||"All Status",p=$("#fPriority")?.value||"All Priority",c=$("#fCategory")?.value||"All Categories";return leads.filter(l=>(!q||[l.igHandle,l.business,l.category,l.notes,l.phone,l.email].join(" ").toLowerCase().includes(q))&&(s==="All Status"||l.status===s)&&(p==="All Priority"||l.priority===p)&&(c==="All Categories"||l.category===c))}
+function card(l){let u=user(l.igHandle),ne=l.nextAction||calcNextAction(l),no=!String(l.notes||"").trim();return`<article class="leadCard" data-id="${esc(l.id)}" style="border-left-color:${PC[l.priority]||"#00d4ff"};--lead-glow:${PC[l.priority]||"#00d4ff"}"><div class="leadTop"><div class="avatar">${initText(l.igHandle||l.business)}</div><div class="identity"><div class="handle">${esc(l.igHandle||"@unknown")}</div><div class="business">${esc(l.business)} · ${esc(l.category)}</div><div class="contactIcons"><a class="contactIcon ${l.phone?"":"disabled"}" href="${l.phone?"tel:"+esc(l.phone):"#"}">${phoneSvg()}</a><a class="contactIcon ${l.email?"":"disabled"}" href="${l.email?"mailto:"+esc(l.email):"#"}">${mailSvg()}</a></div></div><div class="igActions"><button class="miniBtn copyBtn" data-copy="${esc(u)}">COPY IG</button><a class="openBtn" href="https://instagram.com/${esc(u)}" target="_blank">OPEN IG</a></div></div><div class="divider"></div><div class="controlRow"><div class="inline"><select class="pill statusSelect" data-v="${esc(l.status)}">${opts(STATUSES,l.status)}</select><select class="pill prioritySelect" data-v="${esc(l.priority)}">${opts(PRIORITIES,l.priority)}</select></div><div class="lastContact"><button class="dateBtn lastDateBtn">Last: ${sd(l.lastContact)}</button><button class="dateBtn nextDateBtn nextDate">Next: ${ne?sd(ne):"None"}</button></div></div><div class="datePickerRow"><div class="dateField"><label>LAST CONTACT</label><input type="date" class="lastDateInput" value="${(l.lastContact||"").slice(0,10)}"></div><div class="dateField"><label>NEXT ACTION</label><input type="date" class="nextDateInput" value="${(ne||"").slice(0,10)}"></div></div><div class="notesWrap ${no?"emptyNote":""}"><div class="notesHeader"><span>NOTES</span><button class="editNoteBtn">EDIT</button></div><textarea class="notes">${esc(l.notes)}</textarea></div><button class="showNotesBtn ${no?"":"hidden"}">Notes</button><div class="expanded"><div class="expandedTitle">LEAD DETAILS</div><div class="expandedGrid"><div class="expandedField"><label>BUSINESS</label><input class="expBusiness" value="${esc(l.business)}"></div><div class="expandedField"><label>IG HANDLE</label><input class="expHandle" value="${esc(u)}"></div><div class="expandedField"><label>CATEGORY</label><select class="expCategory">${opts(CATEGORIES,l.category)}</select></div><div class="expandedField"><label>PHONE</label><input class="expPhone" value="${esc(l.phone)}"></div><div class="expandedField"><label>EMAIL</label><input class="expEmail" value="${esc(l.email)}"></div><div class="expandedField"><label>STATUS</label><select class="expStatus">${opts(STATUSES,l.status)}</select></div><div class="expandedField"><label>PRIORITY</label><select class="expPriority">${opts(PRIORITIES,l.priority)}</select></div><div class="expandedField"><label>NOTES</label><textarea class="expNotes">${esc(l.notes)}</textarea></div></div><button class="collapse">COLLAPSE</button></div></article>`}
+function render(){let list=filtered();$("#count").textContent=leads.length;$("#visible").textContent=list.length;$("#total").textContent=leads.length;$("#high").textContent=leads.filter(l=>l.priority==="HIGH").length;$("#replied").textContent=leads.filter(l=>["REPLIED","ENGAGED","CLOSED"].includes(l.status)).length;$("#active").textContent=leads.filter(l=>!["CLOSED","NOT INTERESTED","DEAD"].includes(l.status)).length;$("#leadList").innerHTML=list.length?list.map(card).join(""):'<div class="empty">No leads found. Tap + to add one.</div>';bind();renderToday()}
+async function saveLead(raw,silent=false){let l=normalizeLead(raw);l.updatedAt=now();if(!raw.nextAction)l.nextAction=calcNextAction(l);let i=leads.findIndex(x=>String(x.id)===String(l.id));if(i>=0)leads[i]=l;else leads.unshift(l);saveBackup();render();if(!firebaseReady||!db){$("#syncText").textContent="Backup mode";if(!silent)toast("Saved locally");return}try{writing=true;await setDoc(doc(db,FIRESTORE_COLLECTION,l.id),l,{merge:true});$("#syncText").textContent="Live";if(!silent)toast("Saved")}catch(e){console.error(e);$("#syncText").textContent="Backup mode";if(!silent)toast("Saved locally")}finally{setTimeout(()=>{writing=false},250)}}
+function bind(){$$(".copyBtn").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.copy);toast("IG copied")});$$(".showNotesBtn").forEach(b=>b.onclick=()=>{let c=b.closest(".leadCard");$(".notesWrap",c)?.classList.remove("emptyNote");b.classList.add("hidden")});$$(".leadCard").forEach(c=>{let l=leads.find(x=>String(x.id)===String(c.dataset.id));if(!l)return;let av=$(".avatar",c),col=$(".collapse",c),s=$(".statusSelect",c),p=$(".prioritySelect",c),n=$(".notes",c);if(av)av.onclick=()=>c.classList.toggle("open");if(col)col.onclick=()=>c.classList.remove("open");if(s)s.onchange=e=>{
+      const status=normText(e.target.value);
+      l.status=status;
+      l.lastContact=now();
+      l.updatedAt=now();
+      const next=nextActionAfterStatus(status);
+      if(next || ["CLOSED","NOT INTERESTED","DEAD"].includes(status)) l.nextAction=next;
+      saveLead(l,true);
+    };if(p)p.onchange=e=>{l.priority=e.target.value;saveLead(l,true)};if(n)n.oninput=e=>{l.notes=e.target.value;saveLead(l,true)};let lb=$(".lastDateBtn",c),nb=$(".nextDateBtn",c),li=$(".lastDateInput",c),ni=$(".nextDateInput",c);
+    const openDateInput=(input)=>{
+      c.classList.add("dateOpen");
+      if(!input)return;
+      input.focus();
+      if(typeof input.showPicker==="function") input.showPicker();
+      else input.click();
+    };
+    if(lb)lb.onclick=()=>openDateInput(li);
+    if(nb)nb.onclick=()=>openDateInput(ni);
+    if(li)li.onchange=e=>{let iso=toIsoDateValue(e.target.value);if(iso){l.lastContact=iso;saveLead(l,true)}};
+    if(ni)ni.onchange=e=>{l.nextAction=toIsoDateValue(e.target.value);saveLead(l,true)};let bf=(sel,key,tf=null)=>{let el=$(sel,c);if(!el)return;let fn=tf||(v=>v);el.oninput=e=>{l[key]=fn(e.target.value);saveLead(l,true)};el.onchange=e=>{l[key]=fn(e.target.value);saveLead(l,true)}};bf(".expBusiness","business");bf(".expHandle","igHandle",v=>norm(v));bf(".expCategory","category");bf(".expPhone","phone");bf(".expEmail","email");bf(".expNotes","notes");bf(".expStatus","status");bf(".expPriority","priority")})}
+function splitLine(line){let out=[],cur="",q=false;for(let i=0;i<line.length;i++){let ch=line[i],n=line[i+1];if(ch=='"'&&q&&n=='"'){cur+='"';i++;continue}if(ch=='"'){q=!q;continue}if((ch===','||ch==='\t')&&!q){out.push(cur.trim());cur="";continue}cur+=ch}out.push(cur.trim());return out}
+function mapHead(arr){let m={};arr.forEach((x,i)=>{let k=String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");if(["business","businessname","company","companyname","name"].includes(k))m.business=i;else if(["ighandle","instagram","instagramhandle","ig","handle","username","profile"].includes(k))m.ig=i;else if(["category","industry","niche","type"].includes(k))m.category=i;else if(["phone","phonenumber","tel","telephone","number"].includes(k))m.phone=i;else if(["email","emailaddress","e-mail"].includes(k))m.email=i;else if(["notes","note","description","details"].includes(k))m.notes=i});return m}
+function parseRows(text){let lines=String(text||"").replaceAll("\r","").split("\n").map(x=>x.trim()).filter(Boolean);if(!lines.length)return[];let head=splitLine(lines[0]),m=mapHead(head),has=m.business!==undefined||m.ig!==undefined||m.category!==undefined,start=has?1:0;if(!has)m={business:0,ig:1,category:2,phone:3,email:4,notes:5};let seen=new Set();return lines.slice(start).map(line=>{let c=splitLine(line),lead={business:c[m.business]||"",igHandle:norm(c[m.ig]||""),category:c[m.category]||"Other",phone:c[m.phone]||"",email:c[m.email]||"",notes:c[m.notes]||""},err=[];if(!lead.business)err.push("Missing business");if(!lead.igHandle)err.push("Missing IG");if(!lead.category)err.push("Missing category");let key=lead.igHandle.toLowerCase();if(key&&seen.has(key))err.push("Duplicate in import");seen.add(key);return{...lead,_errors:err}})}
+async function addImported(rows){let good=(rows||[]).filter(r=>!r._errors.length);if(!good.length)return toast("No valid leads");for(let r of good){await saveLead({id:"LEAD-"+Date.now()+"-"+Math.floor(Math.random()*99999),dateAdded:now(),igHandle:r.igHandle,business:r.business,category:r.category,phone:r.phone,email:r.email,status:"NEW LEAD",priority:"NEW LEAD",notes:r.notes,lastContact:now(),nextAction:"",source:"AI Import",owner:"Flo",updatedAt:now()},true)}$("#importSummary").textContent=good.length+" leads added to CRM";$("#importInput").value="";$("#importPreview").innerHTML="";switchPage("leads");toast(good.length+" leads added to CRM")}
+function previewImport(){let rows=parseRows($("#importInput").value);window._rows=rows;let good=rows.filter(r=>!r._errors.length),bad=rows.length-good.length;$("#importSummary").textContent=`${good.length} ready · ${bad} need review`;$("#importPreview").innerHTML=rows.map(r=>`<div class="importPreviewCard ${r._errors.length?"importBad":"importGood"}"><strong>${esc(r.business||"Missing business")} · ${esc(r.igHandle||"Missing IG")}</strong><span>${esc(r.category||"Missing category")} ${r.phone?"· "+esc(r.phone):""} ${r.email?"· "+esc(r.email):""}</span>${r._errors.length?`<span style="color:#ef4444">Issues: ${esc(r._errors.join(", "))}</span>`:`<span style="color:#00d4ff">Ready</span>`}</div>`).join("")+`<div class="importActions"><button id="addReadyBtn" class="primary">ADD READY LEADS</button></div>`;let btn=$("#addReadyBtn");if(btn)btn.onclick=()=>addImported(window._rows||[])}
+function importFile(){let f=$("#importFile").files[0];if(!f)return toast("Choose a file first");let reader=new FileReader();reader.onload=e=>{$("#importInput").value=e.target.result||"";addImported(parseRows($("#importInput").value))};reader.readAsText(f)}
+function sheetJsonp(url){return new Promise((resolve,reject)=>{let cb="astonity_sheet_cb_"+Date.now()+"_"+Math.floor(Math.random()*99999),s=document.createElement("script"),timer;window[cb]=data=>{clearTimeout(timer);delete window[cb];s.remove();resolve(data)};s.onerror=()=>{clearTimeout(timer);delete window[cb];s.remove();reject(Error("Sheet JSONP failed"))};timer=setTimeout(()=>{delete window[cb];s.remove();reject(Error("Sheet timeout"))},12000);s.src=url+(url.includes("?")?"&":"?")+"callback="+cb+"&_="+Date.now();document.head.appendChild(s)})}
+async function getSheetLeads(){let j=await sheetJsonp(SHEET_SCRIPT_URL+"?action=list");if(!j||!j.success)throw Error((j&&j.error)||"Sheet API error");return(j.leads||[]).map(normalizeLead)}
+async function postSheet(body){await fetch(SHEET_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});return{success:true}}
+async function mirrorFirebaseToSheets(showToast=false){
+  if(!leads.length){
+    hideSyncProgress(0);
+    if(showToast)toast("No leads to mirror");
+    return;
+  }
+  try{
+    $("#syncText").textContent="Syncing sheet...";
+    setSyncProgress(8);
+    let sheetRows=await getSheetLeads();
+    setSyncProgress(20);
+    let sheetById=new Map(sheetRows.map(x=>[String(x.id),x]));
+    let total=leads.length;
+    let done=0;
+    for(let lead of leads){
+      let clean=normalizeLead(lead);
+      if(sheetById.has(String(clean.id))) await postSheet({action:"update",id:clean.id,updates:clean});
+      else await postSheet({action:"add",lead:clean});
+      done++;
+      setSyncProgress(20 + Math.round((done/total)*75));
+    }
+    setSyncProgress(100);
+    $("#syncText").textContent="Live · Sheet synced";
+    if(showToast)toast("Cloud + Sheet synced");
+    hideSyncProgress(700);
+  }catch(e){
+    console.error(e);
+    $("#syncText").textContent="Live · Sheet failed";
+    setSyncProgress(100);
+    hideSyncProgress(900);
+    if(showToast)toast("Sheet sync failed");
+  }
+}
+function msToNextSheetSync(){let n=new Date();for(let [h,m]of SHEET_SYNC_SLOTS){let t=new Date(n);t.setHours(h,m,0,0);if(t>n)return t-n}let t=new Date(n);t.setDate(t.getDate()+1);t.setHours(SHEET_SYNC_SLOTS[0][0],SHEET_SYNC_SLOTS[0][1],0,0);return t-n}
+function scheduleSheetMirror(){clearTimeout(window._sheetTimer);window._sheetTimer=setTimeout(async()=>{await mirrorFirebaseToSheets(false);scheduleSheetMirror()},msToNextSheetSync())}
+async function manualSyncAll(){await loadFirebaseOnce();await mirrorFirebaseToSheets(true)}
+
+function normText(v){return String(v||"").trim().toUpperCase()}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function localISO(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,"0");const day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`}
+function isoFromDateish(v){if(!v)return "";const raw=String(v).trim();const direct=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);if(direct)return direct[0];const d=new Date(raw);if(!isNaN(d))return localISO(d);return ""}
+function computedNextActionISO(lead){const explicit=isoFromDateish(lead.nextAction);if(explicit)return explicit;const status=normText(lead.status);const offsets={"FIRST DM":5,"FOLLOW UP 1":7,"FOLLOW UP 2":7,"REPLIED":0,"DEAD":0};if(!(status in offsets))return "";const baseISO=isoFromDateish(lead.lastContact||lead.updatedAt||lead.dateAdded)||todayISO();const d=new Date(baseISO+"T00:00:00");d.setDate(d.getDate()+offsets[status]);return localISO(d)}
+function isDueFollowup(lead){
+  const status = normText(lead.status);
+
+  // DEAD leads stay out of Today.
+  const followupStatuses = ["FIRST DM","FOLLOW UP 1","FOLLOW UP 2","REPLIED"];
+
+  if(!followupStatuses.includes(status)) return false;
+
+  const next = computedNextActionISO(lead);
+  return !!next && next <= todayISO();
+}
+function getTodayQueues(allLeads){
+  const availableEngagement = allLeads.filter(l =>
+    normText(l.status) === "NEW LEAD" &&
+    normText(l.priority) === "NEW LEAD"
+  );
+
+  const engagement = availableEngagement.slice(0, engagementBatchSize);
+
+  // Outreach only appears when the ENGAGED lead's nextAction is today.
+  const outreach = allLeads
+    .filter(l => normText(l.status) === "ENGAGED" && isoFromDateish(l.nextAction) === todayISO())
+    .slice(0, DAILY_OUTREACH_TARGET);
+
+  const followups = allLeads.filter(isDueFollowup);
+
+  return { engagement, outreach, followups, availableEngagement };
+}
+function nextActionAfterStatus(status){const clean=normText(status);const offsets={"FIRST DM":5,"FOLLOW UP 1":7,"FOLLOW UP 2":7};if(!(clean in offsets))return "";const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+offsets[clean]);return localISO(d)}
+async function updateLeadFromToday(leadId,newStatus){const lead=leads.find(l=>String(l.id)===String(leadId));if(!lead)return;const status=normText(newStatus);lead.status=status;lead.lastContact=now();lead.updatedAt=now();lead.nextAction=nextActionAfterStatus(status);await saveLead(lead,true);renderToday();render()}
+function todayLeadCard(lead,kind){
+  return card(lead);
+}
+function renderToday(){
+  const queues = getTodayQueues(leads);
+
+  const engagement = $("#engagementList");
+  const outreach = $("#outreachList");
+  const followups = $("#followupList");
+
+  const loadMoreButton = queues.availableEngagement.length > engagementBatchSize
+    ? '<button id="loadMoreEngagementBtn" class="primary" type="button">LOAD 10 MORE LEADS</button>'
+    : '';
+
+  if(engagement){
+    engagement.innerHTML = queues.engagement.length
+      ? queues.engagement.map(l => todayLeadCard(l,"engagement")).join("") + loadMoreButton
+      : '<div class="empty">No engagement leads due.</div>' + loadMoreButton;
+  }
+
+  if(outreach){
+    outreach.innerHTML = queues.outreach.length
+      ? queues.outreach.map(l => todayLeadCard(l,"outreach")).join("")
+      : '<div class="empty">No outreach leads due today.</div>';
+  }
+
+  if(followups){
+    followups.innerHTML = queues.followups.length
+      ? queues.followups.map(l => todayLeadCard(l,"followups")).join("")
+      : '<div class="empty">No follow ups due.</div>';
+  }
+
+  const set = (id,value) => {
+    const el = $("#"+id);
+    if(el) el.textContent = value;
+  };
+
+  set("engagementBadge", queues.engagement.length);
+  set("outreachBadge", queues.outreach.length);
+  set("followupBadge", queues.followups.length);
+
+  const todayTasks = tasks.filter(t => !t.completed && t.dueDate === todayISO());
+  const overdue = tasks.filter(t => !!t.dueDate && t.dueDate < todayISO() && !t.completed);
+  const ast = tasks.filter(t => t.project === "Astonity" && !t.completed);
+  const per = tasks.filter(t => t.project === "Personal Brand" && !t.completed);
+  const done = tasks.filter(t => t.completed);
+
+  set("glanceTodayTasks", todayTasks.length);
+  set("glanceOverdue", overdue.length);
+  set("glanceAstonity", ast.length);
+  set("glancePersonal", per.length);
+  set("glanceCompleted", done.length);
+  set("glanceTodaySub", todayTasks.length ? "Due today" : "Nothing due");
+  set("glanceOverdueSub", overdue.length ? "Needs attention" : "None overdue");
+
+  const todayCard = $(".todayCard");
+  const overdueCard = $(".overdueCard");
+
+  if(todayCard) todayCard.classList.toggle("alertGreen", todayTasks.length > 0);
+  if(overdueCard) overdueCard.classList.toggle("alertRed", overdue.length > 0);
+
+  // Same CRM lead-card buttons/functions inside Today.
+  bind();
+
+  const more = $("#loadMoreEngagementBtn");
+  if(more){
+    more.onclick = () => {
+      engagementBatchSize += 10;
+      renderToday();
+    };
+  }
+}
+function toggleQueue(id){const q=$("#"+id);if(q)q.classList.toggle("collapsed")}
+
+function taskAccent(priority){const p=String(priority||"To Do");if(p==="URGENT")return"#ef4444";if(p==="Important")return"#22c55e";return"#facc15"}
+function normalizeTask(t,i=0){return{id:String(t.id||("TASK-"+Date.now()+"-"+Math.floor(Math.random()*99999))),title:t.title||"Untitled task",dueDate:t.dueDate||t.due||"",project:TASK_PROJECTS.includes(t.project||t.brand)?(t.project||t.brand):DEFAULT_TASK_PROJECT,priority:TASK_PRIORITIES.includes(t.priority)?t.priority:DEFAULT_TASK_PRIORITY,completed:!!(t.completed||t.done),manualOrder:Number.isFinite(Number(t.manualOrder??t.order))?Number(t.manualOrder??t.order):i*10,updatedAt:t.updatedAt||now()}}
+function saveTaskBackup(){localStorage.setItem(TASK_BACKUP_KEY,JSON.stringify(tasks))}
+function loadTaskBackup(){try{return JSON.parse(localStorage.getItem(TASK_BACKUP_KEY)||"[]").map(normalizeTask)}catch(e){return[]}}
+function isTaskOverdue(t){return !!t.dueDate&&t.dueDate<todayISO()&&!t.completed}
+function isTaskThisWeek(t){if(!t.dueDate)return false;const d=new Date(t.dueDate+"T00:00:00");const n=new Date();const start=new Date(n);start.setDate(n.getDate()-n.getDay());start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return d>=start&&d<end}
+function filteredTasks(){let list=[...tasks];if(taskFilter==="today")list=list.filter(t=>t.dueDate===todayISO()&&!t.completed);else if(taskFilter==="week")list=list.filter(t=>isTaskThisWeek(t)&&!t.completed);else if(taskFilter==="overdue")list=list.filter(isTaskOverdue);else if(taskFilter==="completed")list=list.filter(t=>t.completed);else if(taskFilter==="Astonity")list=list.filter(t=>t.project==="Astonity");else if(taskFilter==="Personal Brand")list=list.filter(t=>t.project==="Personal Brand");list.sort((a,b)=>(a.completed-b.completed)||Number(a.manualOrder||0)-Number(b.manualOrder||0));return list}
+function taskCard(t){return `<article class="taskItem ${t.completed?"done":""}" draggable="true" data-task-id="${esc(t.id)}" style="--taskAccent:${taskAccent(t.priority)}"><button class="taskCheck ${t.completed?"done":""}" type="button" aria-label="Complete task"></button><div class="taskMain"><div class="taskTitle">${esc(t.title)}</div><div class="taskMeta">${esc(t.project)} · ${esc(t.priority)} · ${t.dueDate?`Due ${esc(t.dueDate)}`:"No due date"}</div></div><button class="taskDelete" type="button">×</button><div class="taskEditPanel"><div class="taskEditGrid"><div class="wide"><label>Task title</label><input class="editTaskTitle" value="${esc(t.title)}"></div><div><label>Project</label><select class="editTaskProject">${TASK_PROJECTS.map(x=>`<option ${x===t.project?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Priority</label><select class="editTaskPriority">${TASK_PRIORITIES.map(x=>`<option ${x===t.priority?"selected":""}>${x}</option>`).join("")}</select></div><div class="wide"><label>Due date</label><input type="date" class="editTaskDue" value="${esc(t.dueDate)}"></div></div></div></article>`}
+function renderTasks(){const list=filteredTasks();const el=$("#taskList");if(el)el.innerHTML=list.length?list.map(taskCard).join(""):'<div class="empty">No tasks here.</div>';$$(".taskFilter").forEach(b=>b.classList.toggle("active",b.dataset.filter===taskFilter));bindTasks();renderToday()}
+async function saveTask(task,silent=false){task=normalizeTask({...task,updatedAt:now()});const i=tasks.findIndex(t=>String(t.id)===String(task.id));if(i>=0)tasks[i]=task;else tasks.unshift(task);saveTaskBackup();renderTasks();if(!firebaseReady||!db){if(!silent)toast("Task saved locally");return}try{taskWriting=true;await setDoc(doc(db,TASK_COLLECTION,task.id),task,{merge:true});if(!silent)toast("Task saved")}catch(e){console.error(e);if(!silent)toast("Task saved locally")}finally{setTimeout(()=>taskWriting=false,250)}}
+async function addTask(){const title=$("#taskTitle").value.trim();if(!title)return toast("Task title required");const min=tasks.length?Math.min(...tasks.map(t=>Number(t.manualOrder||0))):0;await saveTask({id:"TASK-"+Date.now(),title,dueDate:$("#taskDue").value,project:$("#taskProject").value||DEFAULT_TASK_PROJECT,priority:$("#taskPriority").value||DEFAULT_TASK_PRIORITY,completed:false,manualOrder:min-10,updatedAt:now()});$("#taskTitle").value="";$("#taskDue").value="";$("#taskProject").value=DEFAULT_TASK_PROJECT;$("#taskPriority").value=DEFAULT_TASK_PRIORITY;$("#taskFormPanel").classList.remove("open")}
+function bindTasks(){$$(".taskItem").forEach(item=>{const id=item.dataset.taskId;const task=tasks.find(t=>String(t.id)===String(id));if(!task)return;$(".taskCheck",item).onclick=e=>{e.stopPropagation();task.completed=!task.completed;saveTask(task,true)};$(".taskMain",item).onclick=()=>item.classList.toggle("editing");$(".taskDelete",item).onclick=e=>{e.stopPropagation();tasks=tasks.filter(t=>String(t.id)!==String(id));saveTaskBackup();renderTasks();if(firebaseReady&&db)setDoc(doc(db,TASK_COLLECTION,id),{deleted:true,updatedAt:now()},{merge:true})};$(".editTaskTitle",item).oninput=e=>{task.title=e.target.value;saveTask(task,true)};$(".editTaskProject",item).onchange=e=>{task.project=e.target.value;saveTask(task,true)};$(".editTaskPriority",item).onchange=e=>{task.priority=e.target.value;saveTask(task,true)};$(".editTaskDue",item).onchange=e=>{task.dueDate=e.target.value;saveTask(task,true)}});bindTaskDrag()}
+function bindTaskDrag(){const list=$("#taskList");if(!list)return;let dragged=null;$$('#taskList .taskItem').forEach(item=>{item.ondragstart=e=>{if(e.target.closest("button,input,select,.taskEditPanel")){e.preventDefault();return}dragged=item;item.classList.add("dragging");e.dataTransfer.effectAllowed="move"};item.ondragend=()=>{item.classList.remove("dragging");$$('#taskList .taskItem').forEach(x=>x.classList.remove("dragOver"));applyTaskOrder();dragged=null};item.ondragover=e=>{e.preventDefault();if(!dragged||dragged===item)return;item.classList.add("dragOver");const rect=item.getBoundingClientRect();const after=e.clientY>rect.top+rect.height/2;list.insertBefore(dragged,after?item.nextSibling:item)};item.ondragleave=()=>item.classList.remove("dragOver");item.ondrop=e=>e.preventDefault()})}
+function applyTaskOrder(){const ids=$$('#taskList .taskItem').map(el=>el.dataset.taskId);ids.forEach((id,i)=>{const t=tasks.find(x=>String(x.id)===String(id));if(t)t.manualOrder=i*10});saveTaskBackup();tasks.forEach(t=>{if(firebaseReady&&db)setDoc(doc(db,TASK_COLLECTION,t.id),t,{merge:true})});renderTasks()}
+async function loadTasksOnce(){if(!firebaseReady||!db){tasks=loadTaskBackup();renderTasks();return}try{const snap=await getDocs(query(collection(db,TASK_COLLECTION)));tasks=snap.docs.map(d=>normalizeTask(d.data())).filter(t=>!t.deleted);saveTaskBackup();renderTasks()}catch(e){console.error(e);tasks=loadTaskBackup();renderTasks()}}
+function subscribeTasks(){if(!firebaseReady||!db)return;if(taskUnsub)taskUnsub();taskUnsub=onSnapshot(query(collection(db,TASK_COLLECTION)),snap=>{if(taskWriting)return;tasks=snap.docs.map(d=>normalizeTask(d.data())).filter(t=>!t.deleted);saveTaskBackup();renderTasks()},err=>console.error(err))}
+
+function switchPage(p){$$(".page").forEach(x=>x.classList.remove("active"));$("#"+p)?.classList.add("active");$$(".nav").forEach(x=>x.classList.toggle("active",x.dataset.p===p))}
+async function addLead(){let h=norm($("#aHandle").value);if(!h)return toast("IG handle required");await saveLead({id:"LEAD-"+Date.now(),dateAdded:now(),igHandle:h,business:$("#aBusiness").value||"No business name",category:$("#aCategory").value,phone:$("#aPhone").value,email:$("#aEmail").value,status:"NEW LEAD",priority:"NEW LEAD",notes:$("#aNotes").value,lastContact:now(),nextAction:"",source:"CRM",owner:"Flo",updatedAt:now()});["aBusiness","aHandle","aPhone","aEmail","aNotes"].forEach(id=>$("#"+id).value="");switchPage("leads");toast("Lead added to CRM")}
+async function initFirebase(){try{let app=initializeApp(firebaseConfig);db=getFirestore(app);firebaseReady=true;return true}catch(e){console.error(e);firebaseReady=false;return false}}
+async function loadFirebaseOnce(){if(!firebaseReady||!db){leads=loadBackup();render();$("#syncText").textContent="Backup mode";return}try{$("#syncText").textContent="Loading...";let snap=await getDocs(query(collection(db,FIRESTORE_COLLECTION)));leads=snap.docs.map(d=>normalizeLead(d.data()));leads.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));saveBackup();render();$("#syncText").textContent="Live"}catch(e){console.error(e);leads=loadBackup();render();$("#syncText").textContent="Backup mode"}}
+function subscribeFirebase(){if(!firebaseReady||!db)return;if(unsub)unsub();unsub=onSnapshot(query(collection(db,FIRESTORE_COLLECTION)),snap=>{if(writing)return;leads=snap.docs.map(d=>normalizeLead(d.data()));leads.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));saveBackup();render();$("#syncText").textContent="Live"},err=>{console.error(err);$("#syncText").textContent="Backup mode"})}
+document.addEventListener("DOMContentLoaded",async()=>{
+  $("#fStatus").innerHTML="<option>All Status</option>"+STATUSES.map(x=>`<option>${x}</option>`).join("");
+  $("#fPriority").innerHTML="<option>All Priority</option>"+PRIORITIES.map(x=>`<option>${x}</option>`).join("");
+  $("#fCategory").innerHTML="<option>All Categories</option>"+CATEGORIES.map(x=>`<option>${x}</option>`).join("");
+  $("#aCategory").innerHTML=opts(CATEGORIES,"Contractor");
+
+  ["search","fStatus","fPriority","fCategory"].forEach(id=>{let el=$("#"+id);if(el){el.oninput=render;el.onchange=render}});
+  $$(".nav").forEach(b=>b.onclick=()=>switchPage(b.dataset.p));
+  $$(".queueToggle").forEach(b=>b.onclick=()=>toggleQueue(b.dataset.q));
+  $$(".taskFilter").forEach(b=>b.onclick=()=>{taskFilter=b.dataset.filter;renderTasks()});
+  $$(".glanceCard").forEach(card=>card.onclick=()=>{
+    const jump=card.dataset.jump;
+    if(jump==="tasksToday")taskFilter="today";
+    else if(jump==="tasksOverdue")taskFilter="overdue";
+    else if(jump==="tasksAstonity")taskFilter="Astonity";
+    else if(jump==="tasksPersonal")taskFilter="Personal Brand";
+    else if(jump==="tasksCompleted")taskFilter="completed";
+    switchPage("tasks");
+    renderTasks();
+  });
+
+  $("#syncBtn").onclick=manualSyncAll;
+  $("#addBtn").onclick=addLead;
+  $("#parseImportBtn").onclick=previewImport;
+  $("#importFileBtn").onclick=importFile;
+  $("#toggleTaskForm").onclick=()=>$("#taskFormPanel").classList.toggle("open");
+  $("#saveTaskBtn").onclick=addTask;
+
+  let itb=$("#importToggleBtn"),ip=$("#importPanel");
+  if(itb&&ip)itb.onclick=()=>ip.classList.toggle("open");
+
+  leads=loadBackup();
+  tasks=loadTaskBackup();
+  render();
+  renderTasks();
+
+  await initFirebase();
+  await loadFirebaseOnce();
+  await loadTasksOnce();
+  subscribeFirebase();
+  subscribeTasks();
+  scheduleSheetMirror();
+  switchPage("today");
+});
+  subscribeTasks();
+  scheduleSheetMirror();
+  switchPage("today");
+});
+</script>
+</body>
+</html>
